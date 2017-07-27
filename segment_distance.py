@@ -10,7 +10,7 @@ import nibabel.streamlines.tck as nibtck
 
 # load fiber data
 imgtck = nibtck.TckFile.load("/home/brain/workingdir/data/dwi/hcp/preprocessed/"
-                             "response_dhollander/100206/result/CC_fib.tck")
+                             "response_dhollander/101006/result/CC_fib.tck")
 streams = imgtck.streamlines
 # print len(streams)
 streamlines = [s for s in streams]
@@ -44,17 +44,17 @@ ren = fvtk.ren()
 ren.SetBackground(1, 1, 1)
 fvtk.add(ren, fvtk.streamtube(streamlines, fvtk.colors.white))
 fvtk.record(ren, n_frames=1, out_path='/home/brain/workingdir/data/dwi/hcp/preprocessed/'
-                                      'response_dhollander/100206/result/CC_fib1_20_100.png', size=(600, 600))
+                                      'response_dhollander/101006/result/CC_fib1_20_100_jet.png', size=(600, 600))
 # fvtk.show(ren)
 
 # show the centroids of the CC
-colormap = fvtk.create_colormap(np.arange(len(clusters)))
+colormap = fvtk.create_colormap(np.arange(len(clusters)), name='jet')
 fvtk.clear(ren)
 ren.SetBackground(1, 1, 1)
 fvtk.add(ren, fvtk.streamtube(streamlines, fvtk.colors.white, opacity=0.05))
 fvtk.add(ren, fvtk.streamtube(clusters.centroids, colormap, linewidth=0.4))
 fvtk.record(ren, n_frames=1, out_path='/home/brain/workingdir/data/dwi/hcp/preprocessed/'
-                                      'response_dhollander/100206/result/CC_fib2_20_100.png', size=(600, 600))
+                                      'response_dhollander/101006/result/CC_fib2_20_100_jet.png', size=(600, 600))
 # fvtk.show(ren)
 
 # show the label CC (colors form centroids)
@@ -65,8 +65,8 @@ fvtk.clear(ren)
 ren.SetBackground(1, 1, 1)
 fvtk.add(ren, fvtk.streamtube(streamlines, colormap_full))
 fvtk.record(ren, n_frames=1, out_path='/home/brain/workingdir/data/dwi/hcp/preprocessed/'
-                                      'response_dhollander/100206/result/CC_fib3_20_100.png', size=(600, 600))
-fvtk.show(ren)
+                                      'response_dhollander/101006/result/CC_fib3_20_100_jet.png', size=(600, 600))
+# fvtk.show(ren)
 
 # save the complete ClusterMap object with picking
-save_pickle('/home/brain/workingdir/data/dwi/hcp/preprocessed/response_dhollander/100206/result/CC_fib_20_100.pk2', clusters)
+save_pickle('/home/brain/workingdir/data/dwi/hcp/preprocessed/response_dhollander/101006/result/CC_fib_20_100_jet.pk2', clusters)
