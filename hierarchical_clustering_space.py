@@ -7,10 +7,11 @@ import nibabel.streamlines.tck as nibtck
 import nibabel.streamlines.array_sequence as nibAS
 from sklearn.neighbors import kneighbors_graph
 from sklearn.cluster import AgglomerativeClustering
+from sklearn.cluster import KMeans
 
 
 img_cc = nibtck.TckFile.load('/home/brain/workingdir/data/dwi/hcp/preprocessed/'
-                             'response_dhollander/100206/result/CC_fib.tck')
+                             'response_dhollander/100206/result/CC_fib_remove_non_cc_z-10_x-min.tck')
 streamstck = img_cc.streamlines
 # print streamstck[0]
 
@@ -30,8 +31,10 @@ for i in range(len(img_cc.streamlines)):
         # pass
 print Ls_temp[0]
 
-connectivity = kneighbors_graph(Ls_temp, n_neighbors=10, include_self=False)
-clusters = AgglomerativeClustering(n_clusters=4, connectivity=connectivity, linkage='average')
+# connectivity = kneighbors_graph(Ls_temp, n_neighbors=10, include_self=False)
+# clusters = AgglomerativeClustering(n_clusters=3, connectivity=connectivity, linkage='average')
+# clusters = AgglomerativeClustering(n_clusters=4, linkage='average')
+clusters = KMeans(n_clusters=3)
 labels = clusters.fit_predict(Ls_temp)
 print len(labels)
 d = zip(labels, Ls_temp)
@@ -49,10 +52,10 @@ for k in d:
         for m in img_cc.streamlines:
             if k[1] in m:
                 L_temp_1.append(m)
-    if k[0] == 2:
-        for m in img_cc.streamlines:
-            if k[1] in m:
-                L_temp_2.append(m)
+    # if k[0] == 2:
+    #     for m in img_cc.streamlines:
+    #         if k[1] in m:
+    #             L_temp_2.append(m)
     else:
         for m in img_cc.streamlines:
             if k[1] in m:
@@ -61,19 +64,19 @@ for k in d:
 tractogram = streamlines.tractogram.Tractogram(streamlines=L_temp_0, data_per_streamline=img_cc.tractogram.data_per_streamline,
                                                data_per_point=img_cc.tractogram.data_per_point, affine_to_rasmm=img_cc.tractogram.affine_to_rasmm)
 datdat = nibtck.TckFile(tractogram=tractogram, header=img_cc.header)
-datdat.save('/home/brain/workingdir/data/dwi/hcp/preprocessed/response_dhollander/100206/result/CC_fib0.tck')
+datdat.save('/home/brain/workingdir/data/dwi/hcp/preprocessed/response_dhollander/100206/result/CC_fib_non_cc_z-10_x-min_KM_0.tck')
 
 tractogram1 = streamlines.tractogram.Tractogram(streamlines=L_temp_1, data_per_streamline=img_cc.tractogram.data_per_streamline,
                                                data_per_point=img_cc.tractogram.data_per_point, affine_to_rasmm=img_cc.tractogram.affine_to_rasmm)
 datdat1 = nibtck.TckFile(tractogram=tractogram1, header=img_cc.header)
-datdat1.save('/home/brain/workingdir/data/dwi/hcp/preprocessed/response_dhollander/100206/result/CC_fib1.tck')
+datdat1.save('/home/brain/workingdir/data/dwi/hcp/preprocessed/response_dhollander/100206/result/CC_fib_non_cc_z-10_x-min_KM_1.tck')
 
-tractogram2 = streamlines.tractogram.Tractogram(streamlines=L_temp_2, data_per_streamline=img_cc.tractogram.data_per_streamline,
-                                               data_per_point=img_cc.tractogram.data_per_point, affine_to_rasmm=img_cc.tractogram.affine_to_rasmm)
-datdat2 = nibtck.TckFile(tractogram=tractogram2, header=img_cc.header)
-datdat2.save('/home/brain/workingdir/data/dwi/hcp/preprocessed/response_dhollander/100206/result/CC_fib2.tck')
+# tractogram2 = streamlines.tractogram.Tractogram(streamlines=L_temp_2, data_per_streamline=img_cc.tractogram.data_per_streamline,
+#                                                data_per_point=img_cc.tractogram.data_per_point, affine_to_rasmm=img_cc.tractogram.affine_to_rasmm)
+# datdat2 = nibtck.TckFile(tractogram=tractogram2, header=img_cc.header)
+# datdat2.save('/home/brain/workingdir/data/dwi/hcp/preprocessed/response_dhollander/100206/result/CC_fib_KM_2.tck')
 
 tractogram3 = streamlines.tractogram.Tractogram(streamlines=L_temp_3, data_per_streamline=img_cc.tractogram.data_per_streamline,
                                                data_per_point=img_cc.tractogram.data_per_point, affine_to_rasmm=img_cc.tractogram.affine_to_rasmm)
 datdat3 = nibtck.TckFile(tractogram=tractogram3, header=img_cc.header)
-datdat3.save('/home/brain/workingdir/data/dwi/hcp/preprocessed/response_dhollander/100206/result/CC_fib3.tck')
+datdat3.save('/home/brain/workingdir/data/dwi/hcp/preprocessed/response_dhollander/100206/result/CC_fib_non_cc_z-10_x-min_KM_3.tck')
