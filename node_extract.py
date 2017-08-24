@@ -18,10 +18,6 @@ streamstck = img_cc.streamlines
 # print streamstck[0][0][0]
 print len(streamstck)
 
-L_temp_0 = nibAS.ArraySequence()
-L_temp_1 = nibAS.ArraySequence()
-L_temp_2 = nibAS.ArraySequence()
-L_temp_3 = nibAS.ArraySequence()
 Ls_temp = []
 
 # remove non_CC
@@ -41,8 +37,9 @@ for i in range(len(img_cc.streamlines)):
 print Ls_temp[0]
 print len(Ls_temp)
 
-connectivity = kneighbors_graph(Ls_temp, n_neighbors=30, mode='connectivity', include_self=True)
-clusters = AgglomerativeClustering(n_clusters=4, connectivity=connectivity, linkage='average')
+# connectivity = kneighbors_graph(Ls_temp, n_neighbors=10, mode='connectivity', include_self=True)
+# connectivity = kneighbors_graph(Ls_temp, n_neighbors=10, include_self=False)
+clusters = AgglomerativeClustering(n_clusters=4, linkage='ward')
 labels = clusters.fit_predict(Ls_temp)
 print len(labels)
 d = zip(labels, Ls_temp)
@@ -53,6 +50,11 @@ d = zip(labels, Ls_temp)
 # print d[0][1]
 print len(d)
 # print type(d)
+
+L_temp_0 = nibAS.ArraySequence()
+L_temp_1 = nibAS.ArraySequence()
+L_temp_2 = nibAS.ArraySequence()
+L_temp_3 = nibAS.ArraySequence()
 
 for k in range(len(d)):
     if d[k][0] == 0:
