@@ -13,6 +13,8 @@ from scipy.sparse import csc_matrix, spdiags
 from scipy.sparse.linalg import eigsh
 from scipy.linalg import norm, svd, LinAlgError
 
+import matplotlib.pyplot as plt
+
 
 img_cc = nibtck.TckFile.load('/home/brain/workingdir/data/dwi/hcp/preprocessed/'
                              'response_dhollander/100206/result/CC_fib.tck')
@@ -50,7 +52,25 @@ dist_temp = pdist(Ls_temp, 'euclidean')
 sdist = squareform(dist_temp)
 print dist_temp.shape
 print type(dist_temp)
-print sdist.shape
+print sdist
+
+# set the correlation matrix
+thre = sdist > 5.6
+sdist[thre] = 0
+print sdist
+
+# show the correlation matrix
+name = range(len(Ls_temp))
+fig = plt.figure()
+ax = fig.add_subplot(111)
+cax = ax.matshow(sdist, vmin=-1, vmax=1)
+fig.colorbar(cax)
+ticks = np.arange(0, len(Ls_temp), 1)
+ax.set_xticks(ticks)
+ax.set_yticks(ticks)
+ax.set_xticklabels(name)
+ax.set_yticklabels(name)
+plt.show()
 
 
 # exception hander for singular value decomposition
