@@ -55,34 +55,38 @@ print type(dist_temp)
 print sdist
 
 # set the correlation matrix
-thre = sdist > 5.6
-sdist[thre] = 0
+thre0 = sdist > 4.5
+sdist[thre0] = 0
+thre1 = sdist > 0
+sdist[thre1] = 1
+
 print sdist
 
-# show the correlation matrix
-name = range(len(Ls_temp))
-fig = plt.figure()
-ax = fig.add_subplot(111)
-cax = ax.matshow(sdist, vmin=-1, vmax=1)
-fig.colorbar(cax)
-ticks = np.arange(0, len(Ls_temp), 1)
-ax.set_xticks(ticks)
-ax.set_yticks(ticks)
-ax.set_xticklabels(name)
-ax.set_yticklabels(name)
-plt.show()
+# # show the correlation matrix
+# name = range(len(Ls_temp))
+# fig = plt.figure()
+# ax = fig.add_subplot(111)
+# cax = ax.matshow(sdist, vmin=-1, vmax=1)
+# fig.colorbar(cax)
+# ticks = np.arange(0, len(Ls_temp), 1)
+# ax.set_xticks(ticks)
+# ax.set_yticks(ticks)
+# ax.set_xticklabels(name)
+# ax.set_yticklabels(name)
+# plt.show()
 
 
 # exception hander for singular value decomposition
 class SVDError(Exception):
-    def __init__(self,value):
+    def __init__(self, value):
         self.value = value
+
     def __str__(self):
         return repr(self.value)
 
 # (eigen_val, eigen_vec) = ncut( W, nbEigenValues )
 # The first step of normalized cut spectral clustering
-def ncut( W, nbEigenValues ):
+def ncut(W, nbEigenValues):
     # parameters
     offset = .5
     maxiterations = 100
@@ -110,7 +114,7 @@ def ncut( W, nbEigenValues ):
     # perform the eigen decomposition
     # eigen_val,eigen_vec = eigsh(P,nbEigenValues,maxiter=maxiterations,\
     #     tol=eigsErrorTolerence,which='LA')
-    eigen_val, eigen_vec = eigsh(P, nbEigenValues, maxiter=maxiterations, tol=eigsErrorTolerence, which='LM')
+    eigen_val, eigen_vec = eigsh(P, nbEigenValues)#, maxiter=maxiterations, tol=eigsErrorTolerence)#, which='LA')
 
     # sort the eigen_vals so that the first is the largest
     i = np.argsort(-eigen_val)
@@ -240,19 +244,19 @@ for k in range(len(d)):
 tractogram = streamlines.tractogram.Tractogram(streamlines=L_temp_0, data_per_streamline=img_cc.tractogram.data_per_streamline,
                                                data_per_point=img_cc.tractogram.data_per_point, affine_to_rasmm=img_cc.tractogram.affine_to_rasmm)
 datdat = nibtck.TckFile(tractogram=tractogram, header=img_cc.header)
-datdat.save('/home/brain/workingdir/data/dwi/hcp/preprocessed/response_dhollander/100206/result/CC_fib_ncut_0.tck')
+datdat.save('/home/brain/workingdir/data/dwi/hcp/preprocessed/response_dhollander/100206/result/CC_fib_ncut_set4.5-0-1_0.tck')
 
 tractogram1 = streamlines.tractogram.Tractogram(streamlines=L_temp_1, data_per_streamline=img_cc.tractogram.data_per_streamline,
                                                data_per_point=img_cc.tractogram.data_per_point, affine_to_rasmm=img_cc.tractogram.affine_to_rasmm)
 datdat1 = nibtck.TckFile(tractogram=tractogram1, header=img_cc.header)
-datdat1.save('/home/brain/workingdir/data/dwi/hcp/preprocessed/response_dhollander/100206/result/CC_fib_ncut_1.tck')
+datdat1.save('/home/brain/workingdir/data/dwi/hcp/preprocessed/response_dhollander/100206/result/CC_fib_ncut_set4.5-0-1_1.tck')
 
 tractogram2 = streamlines.tractogram.Tractogram(streamlines=L_temp_2, data_per_streamline=img_cc.tractogram.data_per_streamline,
                                                data_per_point=img_cc.tractogram.data_per_point, affine_to_rasmm=img_cc.tractogram.affine_to_rasmm)
 datdat2 = nibtck.TckFile(tractogram=tractogram2, header=img_cc.header)
-datdat2.save('/home/brain/workingdir/data/dwi/hcp/preprocessed/response_dhollander/100206/result/CC_fib_ncut_2.tck')
+datdat2.save('/home/brain/workingdir/data/dwi/hcp/preprocessed/response_dhollander/100206/result/CC_fib_ncut_set4.5-0-1_2.tck')
 
 tractogram3 = streamlines.tractogram.Tractogram(streamlines=L_temp_3, data_per_streamline=img_cc.tractogram.data_per_streamline,
                                                data_per_point=img_cc.tractogram.data_per_point, affine_to_rasmm=img_cc.tractogram.affine_to_rasmm)
 datdat3 = nibtck.TckFile(tractogram=tractogram3, header=img_cc.header)
-datdat3.save('/home/brain/workingdir/data/dwi/hcp/preprocessed/response_dhollander/100206/result/CC_fib_ncut_3.tck')
+datdat3.save('/home/brain/workingdir/data/dwi/hcp/preprocessed/response_dhollander/100206/result/CC_fib_ncut_set4.5-0-1_3.tck')
