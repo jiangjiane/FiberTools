@@ -46,6 +46,13 @@ for i in range(len(img_cc.streamlines)):
 # print Ls_temp[0]
 print len(Ls_temp)
 # print type(Ls_temp)
+# print  np.array(Ls_temp)[:, 1]
+
+fig, ax = plt.subplots()
+ax.plot(np.array(Ls_temp)[:, 1], np.array(Ls_temp)[:, 2], 'o')
+ax.set_title('y_z distribution')
+plt.show()
+
 
 # calculate similarity matrix
 dist_temp = pdist(Ls_temp, 'euclidean')
@@ -55,13 +62,12 @@ print type(dist_temp)
 print sdist
 
 # set the correlation matrix
-thre0 = sdist > 6.0
+thre0 = sdist > 5.0
 sdist[thre0] = 0
 thre1 = sdist > 0
-sdist[thre1] = sdist[thre1] / sdist[thre1].max()
-# sdist0_1 = sdist / sdist.max()
-# print sdist0_1
-sdist[thre1] = 1 - sdist[thre1]
+# sdist[thre1] = sdist[thre1] / sdist[thre1].max()
+# sdist[thre1] = 1 - sdist[thre1]
+sdist[thre1] = 1
 print sdist
 
 # # show the correlation matrix
@@ -116,7 +122,7 @@ def ncut(W, nbEigenValues):
     # perform the eigen decomposition
     # eigen_val,eigen_vec = eigsh(P, nbEigenValues, maxiter=maxiterations,
     #                             tol=eigsErrorTolerence, which='LA')
-    eigen_val, eigen_vec = eigsh(P, nbEigenValues, tol=eigsErrorTolerence, which='LA')
+    eigen_val, eigen_vec = eigsh(P, nbEigenValues) #, tol=eigsErrorTolerence, which='LA')
 
     # sort the eigen_vals so that the first is the largest
     i = np.argsort(-eigen_val)
@@ -147,7 +153,7 @@ def discretisation(eigen_vec):
     exitLoop = 0
 
     # if there is an exception we try to randomize and rerun SVD again do this 30 times
-    while (svd_restarts < 30) and (exitLoop==0):
+    while (svd_restarts < 30) and (exitLoop == 0):
 
         # initialize algorithm with a random ordering of eigenvectors
         c = np.zeros((n, 1))
@@ -209,7 +215,7 @@ def discretisation(eigen_vec):
         return eigenvec_discrete
 
 
-eigen_val, eigen_vec = ncut(sdist, 6)
+eigen_val, eigen_vec = ncut(sdist, 4)
 eigenvec_discrete = discretisation(eigen_vec)
 print eigenvec_discrete
 
@@ -232,8 +238,6 @@ L_temp_0 = nibAS.ArraySequence()
 L_temp_1 = nibAS.ArraySequence()
 L_temp_2 = nibAS.ArraySequence()
 L_temp_3 = nibAS.ArraySequence()
-L_temp_4 = nibAS.ArraySequence()
-L_temp_5 = nibAS.ArraySequence()
 
 for k in range(len(d)):
     if d[k][0] == 0:
@@ -242,39 +246,25 @@ for k in range(len(d)):
         L_temp_1.append(img_cc.streamlines[k])
     if d[k][0] == 2:
         L_temp_2.append(img_cc.streamlines[k])
-    if d[k][0] == 3:
-        L_temp_3.append(img_cc.streamlines[k])
-    if d[k][0] == 4:
-        L_temp_4.append(img_cc.streamlines[k])
     else:
-        L_temp_5.append(img_cc.streamlines[k])
+        L_temp_3.append(img_cc.streamlines[k])
 
 tractogram = streamlines.tractogram.Tractogram(streamlines=L_temp_0, data_per_streamline=img_cc.tractogram.data_per_streamline,
                                                data_per_point=img_cc.tractogram.data_per_point, affine_to_rasmm=img_cc.tractogram.affine_to_rasmm)
 datdat = nibtck.TckFile(tractogram=tractogram, header=img_cc.header)
-datdat.save('/home/brain/workingdir/data/dwi/hcp/preprocessed/response_dhollander/100206/result/CC_fib_ncut_set0-1_0.tck')
+datdat.save('/home/brain/workingdir/data/dwi/hcp/preprocessed/response_dhollander/100206/result/CC_fib_ncut1_set0-1_0.tck')
 
 tractogram1 = streamlines.tractogram.Tractogram(streamlines=L_temp_1, data_per_streamline=img_cc.tractogram.data_per_streamline,
                                                data_per_point=img_cc.tractogram.data_per_point, affine_to_rasmm=img_cc.tractogram.affine_to_rasmm)
 datdat1 = nibtck.TckFile(tractogram=tractogram1, header=img_cc.header)
-datdat1.save('/home/brain/workingdir/data/dwi/hcp/preprocessed/response_dhollander/100206/result/CC_fib_ncut_set0-1_1.tck')
+datdat1.save('/home/brain/workingdir/data/dwi/hcp/preprocessed/response_dhollander/100206/result/CC_fib_ncut1_set0-1_1.tck')
 
 tractogram2 = streamlines.tractogram.Tractogram(streamlines=L_temp_2, data_per_streamline=img_cc.tractogram.data_per_streamline,
                                                data_per_point=img_cc.tractogram.data_per_point, affine_to_rasmm=img_cc.tractogram.affine_to_rasmm)
 datdat2 = nibtck.TckFile(tractogram=tractogram2, header=img_cc.header)
-datdat2.save('/home/brain/workingdir/data/dwi/hcp/preprocessed/response_dhollander/100206/result/CC_fib_ncut_set0-1_2.tck')
+datdat2.save('/home/brain/workingdir/data/dwi/hcp/preprocessed/response_dhollander/100206/result/CC_fib_ncut1_set0-1_2.tck')
 
 tractogram3 = streamlines.tractogram.Tractogram(streamlines=L_temp_3, data_per_streamline=img_cc.tractogram.data_per_streamline,
                                                data_per_point=img_cc.tractogram.data_per_point, affine_to_rasmm=img_cc.tractogram.affine_to_rasmm)
 datdat3 = nibtck.TckFile(tractogram=tractogram3, header=img_cc.header)
-datdat3.save('/home/brain/workingdir/data/dwi/hcp/preprocessed/response_dhollander/100206/result/CC_fib_ncut_set0-1_3.tck')
-
-tractogram4 = streamlines.tractogram.Tractogram(streamlines=L_temp_4, data_per_streamline=img_cc.tractogram.data_per_streamline,
-                                               data_per_point=img_cc.tractogram.data_per_point, affine_to_rasmm=img_cc.tractogram.affine_to_rasmm)
-datdat4 = nibtck.TckFile(tractogram=tractogram4, header=img_cc.header)
-datdat4.save('/home/brain/workingdir/data/dwi/hcp/preprocessed/response_dhollander/100206/result/CC_fib_ncut_set0-1_4.tck')
-
-tractogram5 = streamlines.tractogram.Tractogram(streamlines=L_temp_5, data_per_streamline=img_cc.tractogram.data_per_streamline,
-                                               data_per_point=img_cc.tractogram.data_per_point, affine_to_rasmm=img_cc.tractogram.affine_to_rasmm)
-datdat5 = nibtck.TckFile(tractogram=tractogram5, header=img_cc.header)
-datdat5.save('/home/brain/workingdir/data/dwi/hcp/preprocessed/response_dhollander/100206/result/CC_fib_ncut_set0-1_5.tck')
+datdat3.save('/home/brain/workingdir/data/dwi/hcp/preprocessed/response_dhollander/100206/result/CC_fib_ncut1_set0-1_3.tck')
