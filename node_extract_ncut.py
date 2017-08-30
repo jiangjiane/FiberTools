@@ -55,7 +55,7 @@ print type(dist_temp)
 print sdist
 
 # set the correlation matrix
-thre0 = sdist > 5.6
+thre0 = sdist > 6.0
 sdist[thre0] = 0
 thre1 = sdist > 0
 sdist[thre1] = sdist[thre1] / sdist[thre1].max()
@@ -86,7 +86,7 @@ class SVDError(Exception):
     def __str__(self):
         return repr(self.value)
 
-# (eigen_val, eigen_vec) = ncut( W, nbEigenValues )
+# (eigen_val, eigen_vec) = ncut(W, nbEigenValues)
 # The first step of normalized cut spectral clustering
 def ncut(W, nbEigenValues):
     # parameters
@@ -114,9 +114,9 @@ def ncut(W, nbEigenValues):
     P = Dinvsqrt*(W*Dinvsqrt)
 
     # perform the eigen decomposition
-    # eigen_val,eigen_vec = eigsh(P,nbEigenValues,maxiter=maxiterations,\
-    #     tol=eigsErrorTolerence,which='LA')
-    eigen_val, eigen_vec = eigsh(P, nbEigenValues)
+    # eigen_val,eigen_vec = eigsh(P, nbEigenValues, maxiter=maxiterations,
+    #                             tol=eigsErrorTolerence, which='LA')
+    eigen_val, eigen_vec = eigsh(P, nbEigenValues, tol=eigsErrorTolerence, which='LA')
 
     # sort the eigen_vals so that the first is the largest
     i = np.argsort(-eigen_val)
@@ -133,9 +133,9 @@ def ncut(W, nbEigenValues):
 
     return eigen_val, eigen_vec
 
-# eigenvec_discrete=discretisation( eigen_vec )
+# eigenvec_discrete=discretisation(eigen_vec)
 # The second step of normalized cut clustering
-def discretisation( eigen_vec ):
+def discretisation(eigen_vec):
     eps = 2.2204e-16
 
     # normalize the eigenvectors
@@ -209,7 +209,7 @@ def discretisation( eigen_vec ):
         return eigenvec_discrete
 
 
-eigen_val, eigen_vec = ncut(sdist, 4)
+eigen_val, eigen_vec = ncut(sdist, 6)
 eigenvec_discrete = discretisation(eigen_vec)
 print eigenvec_discrete
 
@@ -232,6 +232,8 @@ L_temp_0 = nibAS.ArraySequence()
 L_temp_1 = nibAS.ArraySequence()
 L_temp_2 = nibAS.ArraySequence()
 L_temp_3 = nibAS.ArraySequence()
+L_temp_4 = nibAS.ArraySequence()
+L_temp_5 = nibAS.ArraySequence()
 
 for k in range(len(d)):
     if d[k][0] == 0:
@@ -240,8 +242,12 @@ for k in range(len(d)):
         L_temp_1.append(img_cc.streamlines[k])
     if d[k][0] == 2:
         L_temp_2.append(img_cc.streamlines[k])
-    else:
+    if d[k][0] == 3:
         L_temp_3.append(img_cc.streamlines[k])
+    if d[k][0] == 4:
+        L_temp_4.append(img_cc.streamlines[k])
+    else:
+        L_temp_5.append(img_cc.streamlines[k])
 
 tractogram = streamlines.tractogram.Tractogram(streamlines=L_temp_0, data_per_streamline=img_cc.tractogram.data_per_streamline,
                                                data_per_point=img_cc.tractogram.data_per_point, affine_to_rasmm=img_cc.tractogram.affine_to_rasmm)
@@ -262,3 +268,13 @@ tractogram3 = streamlines.tractogram.Tractogram(streamlines=L_temp_3, data_per_s
                                                data_per_point=img_cc.tractogram.data_per_point, affine_to_rasmm=img_cc.tractogram.affine_to_rasmm)
 datdat3 = nibtck.TckFile(tractogram=tractogram3, header=img_cc.header)
 datdat3.save('/home/brain/workingdir/data/dwi/hcp/preprocessed/response_dhollander/100206/result/CC_fib_ncut_set0-1_3.tck')
+
+tractogram4 = streamlines.tractogram.Tractogram(streamlines=L_temp_4, data_per_streamline=img_cc.tractogram.data_per_streamline,
+                                               data_per_point=img_cc.tractogram.data_per_point, affine_to_rasmm=img_cc.tractogram.affine_to_rasmm)
+datdat4 = nibtck.TckFile(tractogram=tractogram4, header=img_cc.header)
+datdat4.save('/home/brain/workingdir/data/dwi/hcp/preprocessed/response_dhollander/100206/result/CC_fib_ncut_set0-1_4.tck')
+
+tractogram5 = streamlines.tractogram.Tractogram(streamlines=L_temp_5, data_per_streamline=img_cc.tractogram.data_per_streamline,
+                                               data_per_point=img_cc.tractogram.data_per_point, affine_to_rasmm=img_cc.tractogram.affine_to_rasmm)
+datdat5 = nibtck.TckFile(tractogram=tractogram5, header=img_cc.header)
+datdat5.save('/home/brain/workingdir/data/dwi/hcp/preprocessed/response_dhollander/100206/result/CC_fib_ncut_set0-1_5.tck')
