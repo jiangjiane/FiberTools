@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import numpy as np
+import nibabel as nib
 from rw.load import load_tck
 from rw.save import save_tck
 from node_extract import xmin_extract
@@ -14,6 +15,10 @@ import nibabel.streamlines.array_sequence as nibAS
 import matplotlib.pyplot as plt
 
 # load data
+data_path = '/home/brain/workingdir/data/dwi/hcp/preprocessed/' \
+             'response_dhollander/100206/Structure/T1w_acpc_dc_restore_brain.nii.gz'
+img = nib.load(data_path)
+img_data = img.get_data()
 tck_path = '/home/brain/workingdir/data/dwi/hcp/' \
            'preprocessed/response_dhollander/100206/result/CC_fib.tck'
 imgtck = load_tck(tck_path)
@@ -21,7 +26,8 @@ imgtck = load_tck(tck_path)
 
 # extract node according to x-value
 Ls_temp = xmin_extract(imgtck)
-show_2d_node(Ls_temp)
+slice = img_data[130, :, :]
+show_2d_node(Ls_temp, slice)
 
 # calculate similarity matrix
 sdist = coordinate_dist(Ls_temp)
@@ -76,6 +82,7 @@ for k in range(len(d)):
 
 # show node clusters
 fig, ax = plt.subplots()
+ax.imshow(slice.T, cmap='gray', origin='lower')
 ax.plot(np.array(L_temp0)[:, 1], np.array(L_temp0)[:, 2], 'o', color='r')
 ax.plot(np.array(L_temp1)[:, 1], np.array(L_temp1)[:, 2], 'o', color='b')
 ax.plot(np.array(L_temp2)[:, 1], np.array(L_temp2)[:, 2], 'o', color='g')
@@ -84,13 +91,13 @@ plt.show()
 
 # save the fiber cluster
 out_path = '/home/brain/workingdir/data/dwi/hcp/' \
-           'preprocessed/response_dhollander/100206/result/CC_fib_ncut5_set0-1_0.tck'
+           'preprocessed/response_dhollander/100206/result/CC_fib_ncut6_set0-1_0.tck'
 out_path1 = '/home/brain/workingdir/data/dwi/hcp/' \
-            'preprocessed/response_dhollander/100206/result/CC_fib_ncut5_set0-1_1.tck'
+            'preprocessed/response_dhollander/100206/result/CC_fib_ncut6_set0-1_1.tck'
 out_path2 = '/home/brain/workingdir/data/dwi/hcp/' \
-            'preprocessed/response_dhollander/100206/result/CC_fib_ncut5_set0-1_2.tck'
+            'preprocessed/response_dhollander/100206/result/CC_fib_ncut6_set0-1_2.tck'
 out_path3 = '/home/brain/workingdir/data/dwi/hcp/' \
-            'preprocessed/response_dhollander/100206/result/CC_fib_ncut5_set0-1_3.tck'
+            'preprocessed/response_dhollander/100206/result/CC_fib_ncut6_set0-1_3.tck'
 
 save_tck(L_temp_0, imgtck.header, imgtck.tractogram.data_per_streamline,
          imgtck.tractogram.data_per_point, imgtck.tractogram.affine_to_rasmm, out_path)
