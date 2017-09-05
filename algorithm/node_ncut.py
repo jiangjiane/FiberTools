@@ -3,11 +3,14 @@
 
 import numpy as np
 import nibabel as nib
+import numpy.linalg as npl
+from nibabel.affines import apply_affine
+
 from rw.load import load_tck
 from rw.save import save_tck
 from node_extract import xmin_extract
 from ncut import ncut, discretisation, get_labels
-from node_show import show_2d_node, show_dist_matrix
+from node_show import show_2d_node, show_dist_matrix, show_slice_density
 from metric import coordinate_dist
 
 import nibabel.streamlines.array_sequence as nibAS
@@ -19,6 +22,8 @@ data_path = '/home/brain/workingdir/data/dwi/hcp/preprocessed/' \
              'response_dhollander/100206/Structure/T1w_acpc_dc_restore_brain.nii.gz'
 img = nib.load(data_path)
 img_data = img.get_data()
+print img.shape
+print img_data
 tck_path = '/home/brain/workingdir/data/dwi/hcp/' \
            'preprocessed/response_dhollander/100206/result/CC_fib.tck'
 imgtck = load_tck(tck_path)
@@ -26,8 +31,10 @@ imgtck = load_tck(tck_path)
 
 # extract node according to x-value
 Ls_temp = xmin_extract(imgtck)
-slice = img_data[130, :, :]
-show_2d_node(Ls_temp, slice)
+
+# show node or density
+show_2d_node(img, Ls_temp)
+show_slice_density(img, Ls_temp)
 
 # calculate similarity matrix
 sdist = coordinate_dist(Ls_temp)
@@ -82,7 +89,12 @@ for k in range(len(d)):
 
 # show node clusters
 fig, ax = plt.subplots()
+slice = img.get_data()[img.shape[0] / 2, :, :]
 ax.imshow(slice.T, cmap='gray', origin='lower')
+L_temp0 = apply_affine(npl.inv(img.affine), L_temp0)
+L_temp1 = apply_affine(npl.inv(img.affine), L_temp1)
+L_temp2 = apply_affine(npl.inv(img.affine), L_temp2)
+L_temp3 = apply_affine(npl.inv(img.affine), L_temp3)
 ax.plot(np.array(L_temp0)[:, 1], np.array(L_temp0)[:, 2], 'o', color='r')
 ax.plot(np.array(L_temp1)[:, 1], np.array(L_temp1)[:, 2], 'o', color='b')
 ax.plot(np.array(L_temp2)[:, 1], np.array(L_temp2)[:, 2], 'o', color='g')
