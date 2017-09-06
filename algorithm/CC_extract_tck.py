@@ -16,6 +16,22 @@ def extract_cc(imgtck):
             L_temp.append(imgtck.streamlines[i])
     return L_temp
 
+def extract_cc_step(imgtck):
+    '''
+    extract cc fiber
+    :param streamlines:input wholeBrain fiber
+    :return: ArraySequence: extract cc fiber
+    '''
+    L_temp = nibAS.ArraySequence()
+    for i in range(len(imgtck.streamlines)):
+        if imgtck.streamlines[i][0][0] * imgtck.streamlines[i][-1][0] < 0:
+            for j in range(len(imgtck.streamlines[i])-1):
+                if imgtck.streamlines[i][j][0] * imgtck.streamlines[i][j+1][0] < 0:
+                    if j - 10 in range(len(imgtck.streamlines[i])) \
+                            and j + 10 in range(len(imgtck.streamlines[i])) \
+                            and imgtck.streamlines[i][j-10][0] * imgtck.streamlines[i][j+10][0] < 0:
+                        L_temp.append(imgtck.streamlines[i])
+
 
 if __name__ == '__main__':
     from rw.load import load_tck
@@ -26,10 +42,11 @@ if __name__ == '__main__':
     imgtck = load_tck(file)
 
     # extract CC
-    L_temp = extract_cc(imgtck)
+    L_temp = extract_cc_step(imgtck)
     # print L_temp
 
     # save data
-    out_path = '/home/brain/workingdir/data/dwi/hcp/preprocessed/response_dhollander/100206/result/CC_fib.tck'
+    out_path = '/home/brain/workingdir/data/dwi/hcp/' \
+               'preprocessed/response_dhollander/100206/result/CC_fib_new.tck'
     save_tck(L_temp, imgtck.header, imgtck.tractogram.data_per_streamline,
          imgtck.tractogram.data_per_point, imgtck.tractogram.affine_to_rasmm, out_path)
