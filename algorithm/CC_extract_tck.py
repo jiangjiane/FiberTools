@@ -1,6 +1,7 @@
 # !/usr/bin/python
 # -*- coding: utf-8 -*-
 
+import nibabel.streamlines.tck as nibtck
 import nibabel.streamlines.array_sequence as nibAS
 
 
@@ -11,10 +12,56 @@ def extract_cc(imgtck):
     :return: ArraySequence: extract cc fiber
     '''
     L_temp = nibAS.ArraySequence()
-    for i in range(len(imgtck.streamlines)):
-        if imgtck.streamlines[i][0][0] * imgtck.streamlines[i][-1][0] < 0:
-            L_temp.append(imgtck.streamlines[i])
+
+    if isinstance(imgtck, nibtck.TckFile):
+        for i in range(len(imgtck.streamlines)):
+            if imgtck.streamlines[i][0][0] * imgtck.streamlines[i][-1][0] < 0:
+                L_temp.append(imgtck.streamlines[i])
+
+    if isinstance(imgtck, nibAS.ArraySequence):
+        for i in range(len(imgtck)):
+            if imgtck[i][0][0] * imgtck[i][-1][0] < 0:
+                L_temp.append(imgtck[i])
     return L_temp
+
+
+def extract_multi_node(imgtck):
+    '''
+    extract multi-nodes fiber
+    :param imgtck: wholeBrain fiber
+    :return: only node fiber and multi-nodes fiber
+    '''
+    L_temp_noly_node = nibAS.ArraySequence()
+    L_temp_multi_node = nibAS.ArraySequence()
+
+    if isinstance(imgtck, nibtck.TckFile):
+        for i in range(len(imgtck.streamlines)):
+            count = 0
+            if imgtck.streamlines[i][0][0] * imgtck.streamlines[i][-1][0] < 0:
+                for j in range(len(imgtck.streamlines[i] - 1)):
+                    if imgtck.streamlines[i][j][0] * imgtck.streamlines[i][j + 1][0] < 0:
+                        count += 1
+                    elif imgtck.streamlines[i][j][0] == 0:
+                        count += 1
+                if count == 1:
+                    L_temp_noly_node.append(imgtck.streamlines[i])
+                else:
+                    L_temp_multi_node.append(imgtck.streamlines[i])
+                    
+    if isinstance(imgtck, nibAS.ArraySequence):
+        for i in range(len(imgtck)):
+            count = 0
+            if imgtck[i][0][0] * imgtck[i][-1][0] < 0:
+                for j in range(len(imgtck[i] - 1)):
+                    if imgtck[i][j][0] * imgtck[i][j + 1][0] < 0:
+                        count += 1
+                    elif imgtck[i][j][0] == 0:
+                        count += 1
+                if count == 1:
+                    L_temp_noly_node.append(imgtck[i])
+                else:
+                    L_temp_multi_node.append(imgtck[i])
+    return L_temp_noly_node, L_temp_multi_node
 
 
 def extract_cc_step(imgtck):
@@ -24,24 +71,38 @@ def extract_cc_step(imgtck):
     :return: ArraySequence: extract cc fiber
     '''
     L_temp = nibAS.ArraySequence()
-    for i in range(len(imgtck.streamlines)):
-        count = 0
-        l_j = []
-        if imgtck.streamlines[i][0][0] * imgtck.streamlines[i][-1][0] < 0:
-            for j in range(len(imgtck.streamlines[i])-1):
-                if imgtck.streamlines[i][j][0] * imgtck.streamlines[i][j+1][0] < 0:
-                    count += 1
-                    l_j.append(j)
-                elif imgtck.streamlines[i][j][0] == 0:
-                    count += 1
-                    l_j.append(j)
-            if count == 1 \
-                    and (l_j[0] - 20) in range(len(imgtck.streamlines[i])) \
-                    and (l_j[0] + 20) in range(len(imgtck.streamlines[i])) \
-                    and imgtck.streamlines[i][l_j[0]-20][0] * imgtck.streamlines[i][l_j[0]+20][0] < 0:
-                L_temp.append(imgtck.streamlines[i])
-    return L_temp
 
+    if isinstance(imgtck, nibtck.TckFile):
+        for i in range(len(imgtck.streamlines)):
+            if imgtck.streamlines[i][0][0] * imgtck.streamlines[i][-1][0] < 0:
+                for j in range(len(imgtck.streamlines[i]) - 1):
+                    if imgtck.streamlines[i][j][0] * imgtck.streamlines[i][j + 1][0] < 0:
+                        if (j - 20) in range(len(imgtck.streamlines[i])) \
+                                and (j + 20) in range(len(imgtck.streamlines[i])) \
+                                and imgtck.streamlines[i][j - 20][0] * imgtck.streamlines[i][j + 20][0] < 0:
+                            L_temp.append(imgtck.streamlines[i])
+                    elif imgtck.streamlines[i][j][0] == 0:
+                        if (j - 20) in range(len(imgtck.streamlines[i])) \
+                                and (j + 20) in range(len(imgtck.streamlines[i])) \
+                                and imgtck.streamlines[i][j - 20][0] * imgtck.streamlines[i][j + 20][0] < 0:
+                            L_temp.append(imgtck.streamlines[i])
+
+    if isinstance(imgtck, nibAS.ArraySequence):
+        for i in range(len(imgtck)):
+            if imgtck[i][0][0] * imgtck[i][-1][0] < 0:
+                for j in range(len(imgtck[i]) - 1):
+                    if imgtck[i][j][0] * imgtck[i][j + 1][0] < 0:
+                        if (j - 20) in range(len(imgtck[i])) \
+                                and (j + 20) in range(len(imgtck[i])) \
+                                and imgtck[i][j - 20][0] * imgtck[i][j + 20][0] < 0:
+                            L_temp.append(imgtck[i])
+                    elif imgtck[i][j][0] == 0:
+                        if (j - 20) in range(len(imgtck[i])) \
+                                and (j + 20) in range(len(imgtck[i])) \
+                                and imgtck[i][j - 20][0] * imgtck[i][j + 20][0] < 0:
+                            L_temp.append(imgtck[i])
+
+    return L_temp
 
 if __name__ == '__main__':
     from rw.load import load_tck
