@@ -1,8 +1,8 @@
 # !/usr/bin/python
 # -*- coding: utf-8 -*-
 
-
 import nibabel.streamlines.array_sequence as nibAS
+
 
 def extract_cc(imgtck):
     '''
@@ -16,6 +16,7 @@ def extract_cc(imgtck):
             L_temp.append(imgtck.streamlines[i])
     return L_temp
 
+
 def extract_cc_step(imgtck):
     '''
     extract cc fiber
@@ -24,13 +25,22 @@ def extract_cc_step(imgtck):
     '''
     L_temp = nibAS.ArraySequence()
     for i in range(len(imgtck.streamlines)):
+        count = 0
+        l_j = []
         if imgtck.streamlines[i][0][0] * imgtck.streamlines[i][-1][0] < 0:
             for j in range(len(imgtck.streamlines[i])-1):
                 if imgtck.streamlines[i][j][0] * imgtck.streamlines[i][j+1][0] < 0:
-                    if j - 10 in range(len(imgtck.streamlines[i])) \
-                            and j + 10 in range(len(imgtck.streamlines[i])) \
-                            and imgtck.streamlines[i][j-10][0] * imgtck.streamlines[i][j+10][0] < 0:
-                        L_temp.append(imgtck.streamlines[i])
+                    count += 1
+                    l_j.append(j)
+                elif imgtck.streamlines[i][j][0] == 0:
+                    count += 1
+                    l_j.append(j)
+            if count == 1 \
+                    and (l_j[0] - 20) in range(len(imgtck.streamlines[i])) \
+                    and (l_j[0] + 20) in range(len(imgtck.streamlines[i])) \
+                    and imgtck.streamlines[i][l_j[0]-20][0] * imgtck.streamlines[i][l_j[0]+20][0] < 0:
+                L_temp.append(imgtck.streamlines[i])
+    return L_temp
 
 
 if __name__ == '__main__':
