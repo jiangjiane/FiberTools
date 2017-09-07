@@ -7,8 +7,10 @@ import matplotlib.pyplot as plt
 from nibabel.affines import apply_affine
 
 
-def show_2d_node(Ls_temp, slice):
+def show_2d_node(img, Ls_temp):
     fig, ax = plt.subplots()
+    slice = img.get_data()[img.shape[0]/2, :, :]
+    Ls_temp = apply_affine(npl.inv(img.affine), Ls_temp)
     ax.imshow(slice.T, cmap='gray', origin='lower')
     ax.plot(np.array(Ls_temp)[:, 1], np.array(Ls_temp)[:, 2], 'o')
     ax.set_title('y_z distribution')
@@ -29,6 +31,7 @@ def show_dist_matrix(sdist):
     plt.show()
 
 def show_slice_density(img, Ls_temp):
+    fig, ax = plt.subplots()
     Ls_temp = np.array(Ls_temp)
     Ls_temp.T[0] = 0
     Ls_temp = apply_affine(npl.inv(img.affine), Ls_temp)
@@ -38,6 +41,7 @@ def show_slice_density(img, Ls_temp):
         j = Ls[1]
         k = Ls[2]
         counts[j, k] += 1
-    plt.imshow(counts, cmap=plt.cm.hot)
-    plt.colorbar()
+    ax.imshow(slice.T, cmap='gray', origin='lower')
+    cax = ax.imshow(counts, cmap=plt.cm.hot)
+    plt.colorbar(cax)
     plt.show()
