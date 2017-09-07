@@ -25,13 +25,13 @@ img_data = img.get_data()
 print img.shape
 print img_data
 tck_path = '/home/brain/workingdir/data/dwi/hcp/' \
-           'preprocessed/response_dhollander/100206/result/CC_fib.tck'
+           'preprocessed/response_dhollander/100206/result/CC_fib_new.tck'
 imgtck = load_tck(tck_path)
-# streamstck = img_cc.streamlines
-
+streamstck = imgtck.streamlines
+print len(streamstck)
 # extract node according to x-value
 Ls_temp = xmin_extract(imgtck)
-
+print len(Ls_temp)
 # show node or density
 show_2d_node(img, Ls_temp)
 show_slice_density(img, Ls_temp)
@@ -103,13 +103,13 @@ plt.show()
 
 # save the fiber cluster
 out_path = '/home/brain/workingdir/data/dwi/hcp/' \
-           'preprocessed/response_dhollander/100206/result/CC_fib_ncut6_set0-1_0.tck'
+           'preprocessed/response_dhollander/100206/result/CC_fib_ncut_new_set0-1_0.tck'
 out_path1 = '/home/brain/workingdir/data/dwi/hcp/' \
-            'preprocessed/response_dhollander/100206/result/CC_fib_ncut6_set0-1_1.tck'
+            'preprocessed/response_dhollander/100206/result/CC_fib_ncut_new_set0-1_1.tck'
 out_path2 = '/home/brain/workingdir/data/dwi/hcp/' \
-            'preprocessed/response_dhollander/100206/result/CC_fib_ncut6_set0-1_2.tck'
+            'preprocessed/response_dhollander/100206/result/CC_fib_ncut_new_set0-1_2.tck'
 out_path3 = '/home/brain/workingdir/data/dwi/hcp/' \
-            'preprocessed/response_dhollander/100206/result/CC_fib_ncut6_set0-1_3.tck'
+            'preprocessed/response_dhollander/100206/result/CC_fib_ncut_new_set0-1_3.tck'
 
 save_tck(L_temp_0, imgtck.header, imgtck.tractogram.data_per_streamline,
          imgtck.tractogram.data_per_point, imgtck.tractogram.affine_to_rasmm, out_path)
