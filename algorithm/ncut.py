@@ -45,8 +45,8 @@ def ncut(W, nbEigenValues):
     P = Dinvsqrt * (W*Dinvsqrt)
 
     # perform the eigen decomposition
-    # eigen_val,eigen_vec = eigsh(P, nbEigenValues)
-    eigen_val, eigen_vec = eigsh(P, nbEigenValues, maxiter=maxiterations, tol=eigsErrorTolerence, which='LA')
+    eigen_val, eigen_vec = eigsh(P, nbEigenValues)
+    # eigen_val, eigen_vec = eigsh(P, nbEigenValues, maxiter=maxiterations, tol=eigsErrorTolerence, which='LA')
 
     # sort the eigen_vals so that the first is the largest
     i = np.argsort(-eigen_val)
@@ -142,7 +142,7 @@ def get_labels(eigenvec_discrete):
     '''
     get the label numbers--author:Taicheng Huang
     :param eigenvec_discrete:discrete eigenvec
-    :return:labels 
+    :return:labels
     '''
     eigenvec_discrete = eigenvec_discrete.todense()
     eigenvec_discrete = np.array(eigenvec_discrete)
