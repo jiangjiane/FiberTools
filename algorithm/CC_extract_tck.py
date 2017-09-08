@@ -38,7 +38,7 @@ def extract_multi_node(imgtck):
         for i in range(len(imgtck.streamlines)):
             count = 0
             if imgtck.streamlines[i][0][0] * imgtck.streamlines[i][-1][0] < 0:
-                for j in range(len(imgtck.streamlines[i] - 1)):
+                for j in range(len(imgtck.streamlines[i]) - 1):
                     if imgtck.streamlines[i][j][0] * imgtck.streamlines[i][j + 1][0] < 0:
                         count += 1
                     elif imgtck.streamlines[i][j][0] == 0:
@@ -47,12 +47,12 @@ def extract_multi_node(imgtck):
                     L_temp_noly_node.append(imgtck.streamlines[i])
                 else:
                     L_temp_multi_node.append(imgtck.streamlines[i])
-                    
+
     if isinstance(imgtck, nibAS.ArraySequence):
         for i in range(len(imgtck)):
             count = 0
             if imgtck[i][0][0] * imgtck[i][-1][0] < 0:
-                for j in range(len(imgtck[i] - 1)):
+                for j in range(len(imgtck[i]) - 1):
                     if imgtck[i][j][0] * imgtck[i][j + 1][0] < 0:
                         count += 1
                     elif imgtck[i][j][0] == 0:
@@ -70,7 +70,8 @@ def extract_cc_step(imgtck):
     :param streamlines:input wholeBrain fiber
     :return: ArraySequence: extract cc fiber
     '''
-    L_temp = nibAS.ArraySequence()
+    L_temp_need = nibAS.ArraySequence()
+    L_temp_n = nibAS.ArraySequence()
 
     if isinstance(imgtck, nibtck.TckFile):
         for i in range(len(imgtck.streamlines)):
@@ -80,12 +81,16 @@ def extract_cc_step(imgtck):
                         if (j - 20) in range(len(imgtck.streamlines[i])) \
                                 and (j + 20) in range(len(imgtck.streamlines[i])) \
                                 and imgtck.streamlines[i][j - 20][0] * imgtck.streamlines[i][j + 20][0] < 0:
-                            L_temp.append(imgtck.streamlines[i])
+                            L_temp_need.append(imgtck.streamlines[i])
+                        else:
+                            L_temp_n.append(imgtck.streamlines[i])
                     elif imgtck.streamlines[i][j][0] == 0:
                         if (j - 20) in range(len(imgtck.streamlines[i])) \
                                 and (j + 20) in range(len(imgtck.streamlines[i])) \
                                 and imgtck.streamlines[i][j - 20][0] * imgtck.streamlines[i][j + 20][0] < 0:
-                            L_temp.append(imgtck.streamlines[i])
+                            L_temp_need.append(imgtck.streamlines[i])
+                        else:
+                            L_temp_n.append(imgtck.streamlines[i])
 
     if isinstance(imgtck, nibAS.ArraySequence):
         for i in range(len(imgtck)):
@@ -95,14 +100,18 @@ def extract_cc_step(imgtck):
                         if (j - 20) in range(len(imgtck[i])) \
                                 and (j + 20) in range(len(imgtck[i])) \
                                 and imgtck[i][j - 20][0] * imgtck[i][j + 20][0] < 0:
-                            L_temp.append(imgtck[i])
+                            L_temp_need.append(imgtck[i])
+                        else:
+                            L_temp_n.append(imgtck[i])
                     elif imgtck[i][j][0] == 0:
                         if (j - 20) in range(len(imgtck[i])) \
                                 and (j + 20) in range(len(imgtck[i])) \
                                 and imgtck[i][j - 20][0] * imgtck[i][j + 20][0] < 0:
-                            L_temp.append(imgtck[i])
+                            L_temp_need.append(imgtck[i])
+                        else:
+                            L_temp_n.append(imgtck[i])
 
-    return L_temp
+    return L_temp_need, L_temp_n
 
 if __name__ == '__main__':
     from rw.load import load_tck
@@ -113,11 +122,11 @@ if __name__ == '__main__':
     imgtck = load_tck(file)
 
     # extract CC
-    L_temp = extract_cc_step(imgtck)
+    L_temp = extract_multi_node(imgtck)[1]
     # print L_temp
 
     # save data
     out_path = '/home/brain/workingdir/data/dwi/hcp/' \
-               'preprocessed/response_dhollander/100206/result/CC_fib_new.tck'
+               'preprocessed/response_dhollander/100206/result/CC_multi_node_fib.tck'
     save_tck(L_temp, imgtck.header, imgtck.tractogram.data_per_streamline,
          imgtck.tractogram.data_per_point, imgtck.tractogram.affine_to_rasmm, out_path)
