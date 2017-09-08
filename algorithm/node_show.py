@@ -42,6 +42,7 @@ def show_slice_density(img, Ls_temp):
         k = Ls[2]
         counts[j, k] += 1
     ax.imshow(slice.T, cmap='gray', origin='lower')
-    cax = ax.imshow(counts, cmap=plt.cm.hot)
-    plt.colorbar(cax)
+    ax.imshow(counts, cmap=plt.cm.hot)
+    # cax = ax.imshow(counts, cmap=plt.cm.hot)
+    # plt.colorbar(cax)
     plt.show()

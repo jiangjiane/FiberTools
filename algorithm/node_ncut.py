@@ -8,6 +8,7 @@ from nibabel.affines import apply_affine
 
 from rw.load import load_tck
 from rw.save import save_tck
+from CC_extract_tck import extract_cc, extract_multi_node, extract_cc_step
 from node_extract import xmin_extract
 from ncut import ncut, discretisation, get_labels
 from node_show import show_2d_node, show_dist_matrix, show_slice_density
@@ -24,13 +25,24 @@ img = nib.load(data_path)
 img_data = img.get_data()
 print img.shape
 print img_data
-tck_path = '/home/brain/workingdir/data/dwi/hcp/' \
-           'preprocessed/response_dhollander/100206/result/CC_fib_new.tck'
+# tck_path = '/home/brain/workingdir/data/dwi/hcp/' \
+#            'preprocessed/response_dhollander/100206/result/CC_fib_new.tck'
+tck_path = '/home/brain/workingdir/data/dwi/hcp/preprocessed/' \
+       'response_dhollander/100206/Diffusion/100k_sift_1M45006_dynamic250.tck'
+
 imgtck = load_tck(tck_path)
 streamstck = imgtck.streamlines
 print len(streamstck)
+
+# extract cc fib
+imgtck_fib = extract_cc(imgtck)
+# remove multi-node fib
+imgtck_fib = extract_multi_node(imgtck_fib)[0]
+# step > 20
+imgtck_fib = extract_cc_step(imgtck_fib)[0]
+
 # extract node according to x-value
-Ls_temp = xmin_extract(imgtck)
+Ls_temp = xmin_extract(imgtck_fib)
 print len(Ls_temp)
 # show node or density
 show_2d_node(img, Ls_temp)
@@ -53,7 +65,7 @@ print sdist
 # show_dist_matrix(sdist)
 
 # ncut according to coordinate
-eigen_val, eigen_vec = ncut(sdist, 4)
+eigen_val, eigen_vec = ncut(sdist, 3)
 eigenvec_discrete = discretisation(eigen_vec)
 print eigenvec_discrete
 
@@ -83,9 +95,9 @@ for k in range(len(d)):
     if d[k][0] == 2:
         L_temp_2.append(imgtck.streamlines[k])
         L_temp2.append(d[k][1])
-    if d[k][0] == 3:
-        L_temp_3.append(imgtck.streamlines[k])
-        L_temp3.append(d[k][1])
+    # if d[k][0] == 3:
+    #     L_temp_3.append(imgtck.streamlines[k])
+    #     L_temp3.append(d[k][1])
 
 # show node clusters
 fig, ax = plt.subplots()
@@ -94,11 +106,11 @@ ax.imshow(slice.T, cmap='gray', origin='lower')
 L_temp0 = apply_affine(npl.inv(img.affine), L_temp0)
 L_temp1 = apply_affine(npl.inv(img.affine), L_temp1)
 L_temp2 = apply_affine(npl.inv(img.affine), L_temp2)
-L_temp3 = apply_affine(npl.inv(img.affine), L_temp3)
+# L_temp3 = apply_affine(npl.inv(img.affine), L_temp3)
 ax.plot(np.array(L_temp0)[:, 1], np.array(L_temp0)[:, 2], 'o', color='r')
 ax.plot(np.array(L_temp1)[:, 1], np.array(L_temp1)[:, 2], 'o', color='b')
 ax.plot(np.array(L_temp2)[:, 1], np.array(L_temp2)[:, 2], 'o', color='g')
-ax.plot(np.array(L_temp3)[:, 1], np.array(L_temp3)[:, 2], 'o', color='c')
+# ax.plot(np.array(L_temp3)[:, 1], np.array(L_temp3)[:, 2], 'o', color='c')
 plt.show()
 
 # save the fiber cluster
@@ -117,5 +129,5 @@ save_tck(L_temp_1, imgtck.header, imgtck.tractogram.data_per_streamline,
          imgtck.tractogram.data_per_point, imgtck.tractogram.affine_to_rasmm, out_path1)
 save_tck(L_temp_2, imgtck.header, imgtck.tractogram.data_per_streamline,
          imgtck.tractogram.data_per_point, imgtck.tractogram.affine_to_rasmm, out_path2)
-save_tck(L_temp_3, imgtck.header, imgtck.tractogram.data_per_streamline,
-         imgtck.tractogram.data_per_point, imgtck.tractogram.affine_to_rasmm, out_path3)
+# save_tck(L_temp_3, imgtck.header, imgtck.tractogram.data_per_streamline,
+#          imgtck.tractogram.data_per_point, imgtck.tractogram.affine_to_rasmm, out_path3)
